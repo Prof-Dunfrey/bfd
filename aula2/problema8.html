@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>LPJ</title>
+    </head>
+    <body>
+        <h1>Lógica de programação com Javascript</h1>
+
+        <input type="text" placeholder="digite seu texto aqui" id="textoUsuario">
+        <button onclick="imprime()">Mensagem do Dia</button>
+        
+        <input type="text" placeholder="digite um outro texto, buscando pelo id" id="outro">
+        <button onclick="imprime2()">Mensagem do Dia</button>
+
+        <input type="text" placeholder="digite seu texto aqui com getElementById" id="textoUsuario3">
+        <button onclick="imprime3()">Mensagem do Dia</button>
+
+
+        <script>
+            function imprime(){
+                var texto = document.querySelector('#textoUsuario').value;
+                alert(texto);
+            }
+
+            function imprime2(){
+                alert(`${outro.value}`);
+            }
+
+            function imprime3() {
+                var texto = document.getElementById("textoUsuario3").value;
+                alert(texto);
+            }
+            
+        </script>
+    </body>
+</html>
