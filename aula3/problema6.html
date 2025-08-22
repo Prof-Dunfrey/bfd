@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <input type="text" id="nome" placeholder="Nome">
+        <input type="text" id="email" placeholder="E-mail"><br><br>
+        <button onclick="adicionar_usuario()">Adicionar Usuario</button>
+        <ul id="lista_usuario"></ul>
+    </body>
+    <script>
+        let usuarios = []
+
+        function adicionar_usuario(){
+            var [nome, email] = pegar_informacoes();
+            var novo_usuario = {nome, email};
+            usuarios.push(novo_usuario);
+            add_usuario_lista(novo_usuario);
+        }
+        
+        function pegar_informacoes(){
+            var nome = document.getElementById("nome").value;
+            var email = document.getElementById("email").value;
+            return [nome, email];
+        }
+        
+        function add_usuario_lista(novo_usuario){
+            var elemento = document.createElement("li");
+            elemento.textContent = novo_usuario.nome + " - " + novo_usuario.email;
+            document.getElementById("lista_usuario").appendChild(elemento);
+        }
+    </script>
+</html>

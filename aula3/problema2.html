@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Contador, somador e Média</title>
+</head>
+<body>
+    <h2>Digite números positivos</h2>
+    <button onclick="coletarNumeros()">Iniciar</button>
+
+    <script>
+        function coletarNumeros() {
+            var numero;
+            var soma = 0;
+            var contador = 0;
+            do {
+                numero = parseFloat(prompt("Digite um número positivo (ou zero/negativo para sair):"));
+
+                if(numero > 0){
+                    soma += numero;   // soma os positivos
+                    contador++;       // conta quantos foram digitados
+                }
+            } while(numero > 0);
+            if(contador > 0){
+                var media = soma / contador;
+                alert(
+                    "Quantidade de números digitados: " + contador +
+                    "\nSoma dos números positivos: " + soma +
+                    "\nMédia: " + media
+                );
+            } else {
+                alert("Nenhum número positivo foi digitado!");
+            }
+        }
+    </script>
+</body>
+</html>

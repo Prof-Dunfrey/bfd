@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Exemplo com Loop e Condições</title>
+</head>
+<body>
+    <h2>Verificador de Números Pares</h2>
+
+    Digite um número:
+    <input type="number" id="numero">
+    <button onclick="verificar()">Verificar</button>
+
+    <script>
+        function verificar(){
+            var num = document.getElementById("numero").value;
+            var pares = "";
+
+            if(num <= 0){
+                alert("Por favor, digite um número maior que zero.");
+            } else {
+                for(var i = 1; i <= num; i++){
+                    if(i % 2 == 0){ 
+                        pares += i + " ";
+                    }
+                }
+               
+                if(pares == ""){
+                    alert("Não existem números pares até " + num);
+                } else {
+                    alert("Números pares até " + num + ": " + pares);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

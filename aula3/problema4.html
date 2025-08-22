@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <h1>Lista de Frutas</h1>
+        <input type="text" id="nome_fruta" placeholder="Digite uma fruta">
+        <button onclick="adicionar()">Adicionar</button>
+        <button onclick="contador()">Contar Frutas</button>
+        <p id="retorno_usuario"></p>
+    </body>
+    <script>
+        let frutas = [];
+        function adicionar(){
+            if (document.getElementById("nome_fruta").value !== ""){
+                var nome_fruta = document.getElementById("nome_fruta").value;
+                document.getElementById("nome_fruta").value = "";
+                frutas.push(nome_fruta)
+                document.getElementById("retorno_usuario").innerHTML = nome_fruta + " adicionada a lista de frutas!";
+            } else {
+                document.getElementById("retorno_usuario").innerHTML = "Você precisa digitar uma fruta";
+            }
+        }
+        function contador(){
+            var nome_frutas = ""
+            frutas.forEach(imprimir);
+            
+            function imprimir(value){
+                nome_frutas += "<li>" + value + "</li>";
+            }
+
+            document.getElementById("retorno_usuario").innerHTML = 
+            "A lista possui " + frutas.length + " frutas:" + nome_frutas;
+        }
+    </script>
+</html>
