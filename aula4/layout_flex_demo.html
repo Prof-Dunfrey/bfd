@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.flex-container {
+  display: flex;
+  background-color: DodgerBlue;
+}
+
+.flex-container > .div, .p {
+  background-color: #f1f1f1;
+  margin: 10px;
+  padding: 20px;
+  font-size: 30px;
+}
+</style>
+</head>
+<body>
+
+<h1>Criando um bloco flex</h1>
+
+<div class="flex-container">
+  <div class="div">1</div>
+  <div class="div">2</div>
+  <div>3</div>  
+  <p>4</p>
+  <p class="">5</p>
+</div>
+
+<p class="p">Um layout flexivel deve conter um elemento pai com a propriedade <em>display</em> configurada como <em>flex</em>.</p>
+
+<p>Os elementos filhos do bloco seráo autom[aticamente itens flexiveis.</p>
+
+</body>
+</html>

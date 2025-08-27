@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Página Web</title>
+
+    <link rel="stylesheet" href="problema1_style.css">
+    <script src="crud.js"></script>
+</head>
+
+<body>
+
+    <!-- aqui vamos fazer a barra de menu -->
+    <nav id="menu">
+        <ul>
+            <li><a href="#" onclick="show('usuarios')" target="_top">Usuarios</a></li>
+            <li><a href="#" onclick="show('tabelas')">Tabelas</a></li>
+            <li><a href="#" onclick="show('listas')">Listas</a></li>
+        </ul>
+    </nav>
+
+    <div id="usuarios" style="padding: 30px;">
+        <input type="text" class="input" placeholder="Nome" id="nome"><br>
+        <input type="tel" class="input" placeholder="Telefone" id="telefone"><br>
+        <input type="text" class="input" placeholder="E-mail" id="email"><br>
+
+        <button class="button_crud" onclick="adicionar()">Adicionar - C</button>
+        <button class="button_crud" onclick="recuperar()">Recuperar - R</button>
+        <button class="button_crud" onclick="atualizar()">Atualizar - U</button>
+        <button class="button_crud" onclick="deletar()">Apagar - D</button><br>
+
+        <ul type="square" id="lista_usuario"></ul>
+        <p id="selecionado"></p>
+    </div>
+
+    <!-- aqui vamos fazer uma tabela -->
+    <div id="tabelas">
+        <table>
+            <tr>
+                <th>cabeçalho 1</th>
+                <th>cabeçalho 2</th>
+                <th>cabeçalho 3</th>
+            </tr>
+            <tr>
+                <td>um</td>
+                <td>dois</td>
+                <td rowspan="2">tres</td>
+            </tr>
+            <tr>
+                <td>quatro</td>
+                <td>cinco</td>
+            </tr>
+            <tr>
+                <td colspan="2">sete</td>
+                <td>nove</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- aqui vamos apresentar as listas -->
+    <div id="listas" style="padding: 30px;">
+        <h3>Lista não ordenada</h3>
+        <ul class="fancy-ul">
+            <li>um</li>
+            <li>dois</li>
+            <li>tres</li>
+        </ul>
+
+        <h3>Lista ordenada</h3>
+        <ol class="fancy-ol">
+            <li>um</li>
+            <li>dois</li>
+            <li>tres</li>
+        </ol>
+    </div>
+</body>
+<script>
+    function show(elemento) {
+        // pega todos os blocos que têm conteúdo
+        var sections = ["usuarios", "tabelas", "listas"];
+
+        // esconde todos
+        sections.forEach(function (id) {
+            document.getElementById(id).style.display = "none";
+        });
+
+        // mostra só o clicado
+        document.getElementById(elemento).style.display = "block";
+    }
+</script>
+
+</html>
