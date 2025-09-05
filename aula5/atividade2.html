@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro com Construtor</title>
+</head>
+<body>
+  <h2>Cadastro de Pessoas</h2>
+
+  <label>Nome: </label>
+  <input type="text" id="nome"><br><br>
+
+  <label>Idade: </label>
+  <input type="number" id="idade"><br><br>
+
+  <label>Profissão: </label>
+  <input type="text" id="profissao"><br><br>
+
+  <button onclick="adicionarPessoa()">Adicionar Pessoa</button>
+
+  <h3>Lista de Pessoas:</h3>
+  <div id="lista"></div>
+
+  <script>
+    // Construtor de objeto
+    function Pessoa(nome, idade, profissao) {
+      this.nome = nome;
+      this.idade = idade;
+      this.profissao = profissao;
+
+      this.apresentar = function() {
+        return "Olá, eu sou " + this.nome + 
+               ", tenho " + this.idade + 
+               " anos e trabalho como " + this.profissao + ".";
+      };
+
+      this.envelhecer = function() {
+        this.idade++;
+        return this.nome + " agora tem " + this.idade + " anos!";
+      };
+    }
+
+    // Lista para armazenar pessoas criadas
+    const pessoas = [];
+
+    function adicionarPessoa() {
+      let nome = document.getElementById("nome").value;
+      let idade = document.getElementById("idade").value;
+      let profissao = document.getElementById("profissao").value;
+
+      if (nome.trim() === "" || idade.trim() === "" || profissao.trim() === "") {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      // Cria nova pessoa usando o construtor
+      let novaPessoa = new Pessoa(nome, idade, profissao);
+      pessoas.push(novaPessoa);
+
+      mostrarPessoas();
+    }
+
+    function mostrarPessoas() {
+      let saida = "";
+
+      pessoas.forEach((p, i) => {
+        saida += "<p><b>Pessoa " + (i+1) + ":</b><br>" +
+                 p.apresentar() + "<br>" +
+                 "<button onclick='envelhecerPessoa(" + i + ")'>Envelhecer</button>" +
+                 "</p><hr>";
+      });
+
+      document.getElementById("lista").innerHTML = saida;
+    }
+
+    function envelhecerPessoa(indice) {
+      alert(pessoas[indice].envelhecer());
+      mostrarPessoas();
+    }
+  </script>
+</body>
+</html>

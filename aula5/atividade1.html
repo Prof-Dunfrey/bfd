@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Manipulação de Strings</title>
+</head>
+<body>
+  <h2>Manipulação de Strings</h2>
+
+  <label>Palavra 1:</label>
+  <input type="text" id="palavra1"><br><br>
+
+  <label>Palavra 2:</label>
+  <input type="text" id="palavra2"><br><br>
+
+  <button onclick="analisar()">Analisar Palavras</button>
+
+  <p id="resultado"></p>
+
+  <script>
+    function analisar() {
+      // Pegando valores digitados
+      let palavra1 = document.getElementById("palavra1").value;
+      let palavra2 = document.getElementById("palavra2").value;
+
+      // Evita rodar sem palavras
+      if (palavra1.trim() === "" || palavra2.trim() === "") {
+        document.getElementById("resultado").innerText = "Digite as duas palavras!";
+        return;
+      }
+
+      // Manipulações
+      let tamanho = palavra1.length;               // conta caracteres
+      let uniao = palavra1.concat(" ", palavra2);  // junta palavras
+      let corte = palavra1.slice(0, 4);            // primeiros 4 caracteres
+      let indice = palavra1.indexOf("a");          // posição da letra "a"
+      let maiusculo = palavra1.toUpperCase();      // palavra em maiúsculo
+      let minusculo = palavra2.toLowerCase();      // palavra em minúsculo
+      let substituido = palavra1.replace("a", "@"); // troca primeira letra 'a'
+      let caractere = palavra1.at(2);          // terceiro caractere (posição 2)
+
+      let invertida = "";
+      for (let i = palavra1.length - 1; i >= 0; i--) {
+        invertida += palavra1[i];
+      }
+
+      let faltandoEmP1 = "";
+      palavra2.split("").forEach(function(letra) {
+        if (!palavra1.includes(letra)) {
+          faltandoEmP1 += letra;
+        }
+      });
+
+
+      // Exibir resultados
+      document.getElementById("resultado").innerHTML = 
+        "<b>Tamanho:</b> " + tamanho + "<br>" +
+        "<b>Concat:</b> " + uniao + "<br>" +
+        "<b>Slice (0-4):</b> " + corte + "<br>" +
+        "<b>IndexOf('a'):</b> " + indice + "<br>" +
+        "<b>Maiúsculo (palavra1):</b> " + maiusculo + "<br>" +
+        "<b>Minúsculo (palavra2):</b> " + minusculo + "<br>" +
+        "<b>Replace (a → @):</b> " + substituido + "<br>" +
+        "<b>at(2):</b> " + caractere + "<br>" +
+        "<b>invertida:</b> " + invertida + "<br>" +
+        "<b>falta na primeira:</b> " + faltandoEmP1;
+    }
+  </script>
+</body>
+</html>
