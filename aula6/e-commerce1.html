@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrinho de Compras</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .produtos, .carrinho {
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .grid-produtos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .produto, li {
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    button {
+      padding: 5px 10px;
+      margin: 2px;
+      border: none;
+      border-radius: 4px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .total {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .vazio {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛒 Mini Loja</h1>
+  <div class="container">
+    <!-- Produtos -->
+    <div class="produtos">
+      <h2>Produtos</h2>
+      <div class="grid-produtos" id="listaProdutos"></div>
+    </div>
+
+    <!-- Carrinho -->
+    <div class="carrinho">
+      <h2>Carrinho</h2>
+      <ul id="listaCarrinho"></ul>
+      <p class="total">Total: <span id="total">R$ 0,00</span></p>
+    </div>
+  </div>
+
+  <script>
+    // Lista de produtos disponíveis na loja
+    var produtos = [
+      { nome: "Tênis", preco: 200 },
+      { nome: "Livro", preco: 40 },
+      { nome: "Camisa", preco: 50 },
+      { nome: "Fone", preco: 120 }
+    ];
+
+    // Carrinho de compras (inicialmente vazio)
+    var carrinho = [];
+
+    // Função para formatar preços em Real brasileiro
+    function formatarPreco(valor) {
+      return valor.toLocaleString("pt-BR", { 
+        style: "currency", 
+        currency: "BRL" 
+      });
+    }
+
+    // Função para mostrar os produtos na página
+    function mostrarProdutos() {
+      var listaProdutos = document.getElementById("listaProdutos");
+      listaProdutos.innerHTML = "";
+      
+      // Para cada produto, criar um elemento na lista
+      for (var i = 0; i < produtos.length; i++) {
+        listaProdutos.innerHTML += '<div class="produto">' +
+            '<strong>' + produtos[i].nome + '</strong><br>' +
+            formatarPreco(produtos[i].preco) + '<br>' +
+            '<button onclick="adicionarAoCarrinho(' + i + ')">Adicionar</button>' +
+          '</div>';
+      }
+    }
+
+    // Função para adicionar um produto ao carrinho
+    function adicionarAoCarrinho(indiceProduto) {
+      var produto = produtos[indiceProduto];
+      
+      // Verificar se o produto já está no carrinho
+      var produtoNoCarrinho = null;
+
+      for (var i = 0; i < carrinho.length; i++) {
+        if (carrinho[i].nome === produto.nome) {
+          produtoNoCarrinho = carrinho[i];
+          break; // Para de procurar quando encontrar
+        }
+      }
+      
+      if (produtoNoCarrinho) {
+        // Se já está, aumenta a quantidade
+        produtoNoCarrinho.quantidade++;
+      } else {
+        // Se não está, adiciona com quantidade 1
+        carrinho.push({
+          nome: produto.nome,
+          preco: produto.preco,
+          quantidade: 1
+        });
+      }
+      
+      // Atualiza a exibição do carrinho
+      atualizarCarrinho();
+    }
+
+    // Função para remover um produto do carrinho
+    function removerDoCarrinho(nomeProduto) {
+      // Encontra o produto no carrinho
+      var produtoNoCarrinho = null;
+      
+      for (var i = 0; i < carrinho.length; i++) {
+        if (carrinho[i].nome === nomeProduto) {
+          produtoNoCarrinho = carrinho[i];
+          break;
+        }
+      }
+      
+      if (produtoNoCarrinho) {
+        // Diminui a quantidade
+        produtoNoCarrinho.quantidade--;
+        
+        // Se a quantidade chegar a zero, remove o produto
+        if (produtoNoCarrinho.quantidade <= 0) {
+          // Cria um novo carrinho sem o produto
+          var novoCarrinho = [];
+          
+          for (var i = 0; i < carrinho.length; i++) {
+            if (carrinho[i].nome !== nomeProduto) {
+              novoCarrinho.push(carrinho[i]);
+            }
+          }
+          
+          carrinho = novoCarrinho;
+        }
+      }
+      
+      // Atualiza a exibição do carrinho
+      atualizarCarrinho();
+    }
+
+    // Função para atualizar a exibição do carrinho
+    function atualizarCarrinho() {
+      var listaCarrinho = document.getElementById("listaCarrinho");
+      var totalElemento = document.getElementById("total");
+      
+      // Limpa a lista do carrinho
+      listaCarrinho.innerHTML = "";
+      
+      // Se o carrinho estiver vazio, mostra mensagem
+      if (carrinho.length === 0) {
+        listaCarrinho.innerHTML = '<p class="vazio">Carrinho vazio</p>';
+      } else {
+        // Para cada item no carrinho, adiciona à lista
+        for (var i = 0; i < carrinho.length; i++) {
+          var item = carrinho[i];
+          var precoTotal = item.preco * item.quantidade;
+          
+          listaCarrinho.innerHTML += '<li>' +
+              item.nome + ' (x' + item.quantidade + ') - ' + formatarPreco(precoTotal) +
+              '<br>' +
+              '<button onclick="adicionarAoCarrinhoPorNome(\'' + item.nome + '\')">+</button>' +
+              '<button onclick="removerDoCarrinho(\'' + item.nome + '\')">-</button>' +
+            '</li>';
+        }
+      }
+      
+      // Calcula o total do carrinho
+      var total = 0;
+      for (var i = 0; i < carrinho.length; i++) {
+        total += carrinho[i].preco * carrinho[i].quantidade;
+      }
+      
+      // Atualiza o valor total
+      totalElemento.textContent = formatarPreco(total);
+    }
+
+    // Função auxiliar para adicionar produto pelo nome
+    function adicionarAoCarrinhoPorNome(nomeProduto) {
+      // Encontra o produto na lista de produtos
+      for (var i = 0; i < produtos.length; i++) {
+        if (produtos[i].nome === nomeProduto) {
+          adicionarAoCarrinho(i);
+          break;
+        }
+      }
+    }
+
+    // Inicializa a página
+    mostrarProdutos();
+    atualizarCarrinho();
+  </script>
+</body>
+</html>
