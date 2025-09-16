@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestão de Academia</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .formulario {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      margin: 5px;
+      padding: 5px;
+    }
+
+    .alunos {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .aluno {
+      font-weight: bold;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    .treino {
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 5px;
+    }
+
+    .concluido {
+      text-decoration: line-through;
+      color: #777;
+    }
+
+    button {
+      margin-top: 5px;
+      padding: 3px 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>🏋️ Gestão de Academia</h1>
+
+  <div class="formulario">
+    <input type="text" id="aluno" placeholder="Nome do aluno">
+    <input type="text" id="exercicio" placeholder="Exercício">
+    <input type="number" id="series" placeholder="Séries" min="1">
+    <input type="number" id="repeticoes" placeholder="Repetições" min="1">
+    <button onclick="adicionarTreino()">Adicionar Treino</button>
+  </div>
+
+  <div class="alunos" id="listaAlunos"></div>
+
+  <script>
+    // Array para armazenar todos os treinos
+    let treinos = [];
+
+    // Função para mostrar todos os treinos na tela
+    function mostrarTreinos() {
+      const lista = document.getElementById("listaAlunos");
+      lista.innerHTML = "";
+
+      // Se não houver treinos, mostra mensagem
+      if (treinos.length === 0) {
+        lista.innerHTML = "<p>Nenhum treino registrado.</p>";
+        return;
+      }
+
+      // Encontra todos os alunos únicos
+      const alunosUnicos = [];
+      for (let i = 0; i < treinos.length; i++) {
+        if (!alunosUnicos.includes(treinos[i].aluno)) {
+          alunosUnicos.push(treinos[i].aluno);
+        }
+      }
+
+      // Para cada aluno, mostra seus treinos
+      for (let aluno of alunosUnicos) {
+        lista.innerHTML += `<div class="aluno">Aluno: ${aluno}</div>`;
+        
+        // Mostra os treinos deste aluno
+        for (let i = 0; i < treinos.length; i++) {
+          if (treinos[i].aluno === aluno) {
+            const treino = treinos[i];
+            const concluidoClass = treino.concluido ? "concluido" : "";
+            
+            lista.innerHTML += `
+              <div class="treino ${concluidoClass}">
+                ${treino.exercicio} - ${treino.series}x${treino.repeticoes}
+                <br>
+                <button onclick="marcarConcluido(${i})">
+                  ${treino.concluido ? "Desmarcar" : "Concluir"}
+                </button>
+                <button onclick="removerTreino(${i})">Remover</button>
+              </div>
+            `;
+          }
+        }
+      }
+    }
+
+    // Função para adicionar um novo treino
+    function adicionarTreino() {
+      // Obtém os valores dos campos
+      const aluno = document.getElementById("aluno").value;
+      const exercicio = document.getElementById("exercicio").value;
+      const series = parseInt(document.getElementById("series").value);
+      const repeticoes = parseInt(document.getElementById("repeticoes").value);
+
+      // Verifica se todos os campos foram preenchidos
+      if (!aluno || !exercicio || !series || !repeticoes) {
+        alert("Por favor, preencha todos os campos!");
+        return;
+      }
+
+      // Adiciona o novo treino ao array
+      treinos.push({
+        aluno: aluno,
+        exercicio: exercicio,
+        series: series,
+        repeticoes: repeticoes,
+        concluido: false
+      });
+
+      // Limpa os campos de exercício, séries e repetições
+      document.getElementById("exercicio").value = "";
+      document.getElementById("series").value = "";
+      document.getElementById("repeticoes").value = "";
+
+      // Atualiza a exibição dos treinos
+      mostrarTreinos();
+    }
+
+    // Função para remover um treino
+    function removerTreino(indice) {
+      treinos.splice(indice, 1);
+      mostrarTreinos();
+    }
+
+    // Função para marcar/desmarcar um treino como concluído
+    function marcarConcluido(indice) {
+      treinos[indice].concluido = !treinos[indice].concluido;
+      mostrarTreinos();
+    }
+
+    // Mostra os treinos quando a página carrega
+    mostrarTreinos();
+  </script>
+</body>
+</html>

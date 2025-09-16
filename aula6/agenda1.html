@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda Colaborativa de Estudos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .formulario {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, select, button {
+      margin: 5px;
+      padding: 5px;
+    }
+
+    .tarefas {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .usuario {
+      font-weight: bold;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    .dia {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .tarefa {
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 5px;
+    }
+
+    .concluida {
+      text-decoration: line-through;
+      color: #777;
+    }
+
+    button {
+      margin-top: 5px;
+      padding: 3px 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 Agenda Colaborativa de Estudos</h1>
+
+  <div class="formulario">
+    <input type="text" id="usuario" placeholder="Nome do usuário">
+    <input type="text" id="titulo" placeholder="Nome da tarefa">
+    <select id="dia">
+      <option value="Segunda">Segunda</option>
+      <option value="Terça">Terça</option>
+      <option value="Quarta">Quarta</option>
+      <option value="Quinta">Quinta</option>
+      <option value="Sexta">Sexta</option>
+    </select>
+    <button onclick="adicionarTarefa()">Adicionar</button>
+  </div>
+
+  <div class="tarefas" id="listaTarefas"></div>
+
+  <script>
+    // Array para armazenar todas as tarefas
+    let tarefas = [];
+
+    // Dias da semana em ordem
+    const diasSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+
+    // Função para mostrar todas as tarefas na tela
+    function mostrarTarefas() {
+      const lista = document.getElementById("listaTarefas");
+      lista.innerHTML = "";
+
+      // Se não houver tarefas, mostra mensagem
+      if (tarefas.length === 0) {
+        lista.innerHTML = "<p>Nenhuma tarefa adicionada.</p>";
+        return;
+      }
+
+      // Encontra todos os usuários únicos
+      const usuariosUnicos = [];
+      for (let i = 0; i < tarefas.length; i++) {
+        if (!usuariosUnicos.includes(tarefas[i].usuario)) {
+          usuariosUnicos.push(tarefas[i].usuario);
+        }
+      }
+
+      // Para cada usuário, mostra suas tarefas
+      for (let usuario of usuariosUnicos) {
+        lista.innerHTML += `<div class="usuario">Usuário: ${usuario}</div>`;
+        
+        // Para cada dia da semana, mostra as tarefas
+        for (let dia of diasSemana) {
+          // Encontra as tarefas deste usuário para este dia
+          const tarefasDoDia = tarefas.filter(t => 
+            t.usuario === usuario && t.dia === dia
+          );
+          
+          // Se houver tarefas para este dia, mostra elas
+          if (tarefasDoDia.length > 0) {
+            lista.innerHTML += `<div class="dia">${dia}</div>`;
+            
+            for (let i = 0; i < tarefasDoDia.length; i++) {
+              const tarefa = tarefasDoDia[i];
+              const indice = tarefas.indexOf(tarefa);
+              const concluidaClass = tarefa.concluida ? "concluida" : "";
+              
+              lista.innerHTML += `
+                <div class="tarefa ${concluidaClass}">
+                  ${tarefa.titulo}
+                  <br>
+                  <button onclick="marcarConcluida(${indice})">
+                    ${tarefa.concluida ? "Desmarcar" : "Concluir"}
+                  </button>
+                  <button onclick="removerTarefa(${indice})">Remover</button>
+                </div>
+              `;
+            }
+          }
+        }
+      }
+    }
+
+    // Função para adicionar uma nova tarefa
+    function adicionarTarefa() {
+      // Obtém os valores dos campos
+      const usuario = document.getElementById("usuario").value;
+      const titulo = document.getElementById("titulo").value;
+      const dia = document.getElementById("dia").value;
+
+      // Verifica se os campos obrigatórios foram preenchidos
+      if (!usuario || !titulo) {
+        alert("Por favor, preencha o nome do usuário e o nome da tarefa!");
+        return;
+      }
+
+      // Adiciona a nova tarefa ao array
+      tarefas.push({
+        usuario: usuario,
+        titulo: titulo,
+        dia: dia,
+        concluida: false
+      });
+
+      // Limpa o campo do título
+      document.getElementById("titulo").value = "";
+
+      // Atualiza a exibição das tarefas
+      mostrarTarefas();
+    }
+
+    // Função para remover uma tarefa
+    function removerTarefa(indice) {
+      tarefas.splice(indice, 1);
+      mostrarTarefas();
+    }
+
+    // Função para marcar/desmarcar uma tarefa como concluída
+    function marcarConcluida(indice) {
+      tarefas[indice].concluida = !tarefas[indice].concluida;
+      mostrarTarefas();
+    }
+
+    // Mostra as tarefas quando a página carrega
+    mostrarTarefas();
+  </script>
+</body>
+</html>

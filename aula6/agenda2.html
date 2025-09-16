@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda Colaborativa de Estudos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0056b3;
+    }
+
+    .formulario {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: #eef;
+      border-radius: 8px;
+    }
+
+    .formulario input, .formulario select, .formulario button {
+      margin: 5px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    
+    .formulario button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .formulario button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Estilo para validação visual */
+    .input-error {
+      border: 1px solid red !important;
+    }
+
+    .tarefas-info {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1em;
+      color: #555;
+    }
+    
+    .tarefas-info span {
+      font-weight: bold;
+    }
+
+    .controles {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+
+    .controles select, .controles input {
+      padding: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .tarefas {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .usuario {
+      font-weight: bold;
+      margin-top: 25px;
+      font-size: 1.2em;
+      color: #007bff;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+
+    .dia {
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 1.1em;
+      color: #555;
+    }
+
+    .tarefa {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 5px;
+      transition: box-shadow 0.3s;
+    }
+    
+    .tarefa:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .tarefa-conteudo {
+      flex-grow: 1;
+    }
+
+    .tarefa-botoes button {
+      margin-left: 5px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: white;
+    }
+    
+    .concluir-btn {
+      background-color: #28a745;
+    }
+    
+    .concluir-btn:hover {
+      background-color: #218838;
+    }
+    
+    .remover-btn {
+      background-color: #dc3545;
+    }
+    
+    .remover-btn:hover {
+      background-color: #c82333;
+    }
+
+    .concluida {
+      text-decoration: line-through;
+      color: #777;
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 Agenda Colaborativa de Estudos</h1>
+
+  <div class="formulario">
+    <input type="text" id="usuario" placeholder="Nome do usuário" required>
+    <input type="text" id="titulo" placeholder="Nome da tarefa" required>
+    <select id="dia">
+      <option value="todos">Todos os dias</option>
+      <option value="Segunda">Segunda</option>
+      <option value="Terça">Terça</option>
+      <option value="Quarta">Quarta</option>
+      <option value="Quinta">Quinta</option>
+      <option value="Sexta">Sexta</option>
+      <option value="Sábado">Sábado</option>
+      <option value="Domingo">Domingo</option>
+    </select>
+    <button onclick="adicionarTarefa()">Adicionar</button>
+  </div>
+  
+  <div class="tarefas-info">
+    <p>Tarefas pendentes: <span id="tarefasPendentes">0</span> | Tarefas concluídas: <span id="tarefasConcluidas">0</span></p>
+  </div>
+
+  <div class="controles">
+    <input type="text" id="filtroUsuario" placeholder="Filtrar por usuário">
+    <select id="filtroDia">
+      <option value="todos">Filtrar por dia</option>
+      <option value="Segunda">Segunda</option>
+      <option value="Terça">Terça</option>
+      <option value="Quarta">Quarta</option>
+      <option value="Quinta">Quinta</option>
+      <option value="Sexta">Sexta</option>
+      <option value="Sábado">Sábado</option>
+      <option value="Domingo">Domingo</option>
+    </select>
+    <input type="text" id="buscaTarefa" placeholder="Buscar por tarefa">
+  </div>
+
+  <div class="tarefas" id="listaTarefas"></div>
+
+  <script>
+    // Usa localStorage para salvar e carregar as tarefas
+    let tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+
+    // Dias da semana em ordem
+    const diasSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+
+    // Adiciona "ou" para a lógica de "todos os dias"
+    const diasComTodos = ["todos"].concat(diasSemana);
+
+    // Salva as tarefas no localStorage
+    function salvarTarefas() {
+      localStorage.setItem('tarefas', JSON.stringify(tarefas));
+    }
+
+    // Função para mostrar todas as tarefas na tela, com filtros e busca
+    function mostrarTarefas() {
+      const lista = document.getElementById("listaTarefas");
+      lista.innerHTML = "";
+
+      const filtroUsuario = document.getElementById("filtroUsuario").value.toLowerCase();
+      const filtroDia = document.getElementById("filtroDia").value;
+      const buscaTarefa = document.getElementById("buscaTarefa").value.toLowerCase();
+      
+      let tarefasPendentes = 0;
+      let tarefasConcluidas = 0;
+
+      // Filtra as tarefas de acordo com os critérios de busca
+      let tarefasFiltradas = tarefas.filter(t => {
+        const usuarioMatch = filtroUsuario === '' || t.usuario.toLowerCase().includes(filtroUsuario);
+        const diaMatch = filtroDia === 'todos' || t.dia === filtroDia;
+        const tituloMatch = buscaTarefa === '' || t.titulo.toLowerCase().includes(buscaTarefa);
+        return usuarioMatch && diaMatch && tituloMatch;
+      });
+
+      if (tarefas.length > 0) {
+        tarefas.forEach(t => {
+          if (t.concluida) {
+            tarefasConcluidas++;
+          } else {
+            tarefasPendentes++;
+          }
+        });
+      }
+
+      document.getElementById('tarefasPendentes').innerText = tarefasPendentes;
+      document.getElementById('tarefasConcluidas').innerText = tarefasConcluidas;
+
+      if (tarefasFiltradas.length === 0) {
+        lista.innerHTML = "<p>Nenhuma tarefa encontrada.</p>";
+        return;
+      }
+      
+      // Encontra todos os usuários únicos das tarefas filtradas
+      const usuariosUnicos = [...new Set(tarefasFiltradas.map(t => t.usuario))].sort();
+
+      for (let usuario of usuariosUnicos) {
+        lista.innerHTML += `<div class="usuario">Usuário: ${usuario}</div>`;
+        
+        // Para cada dia da semana, mostra as tarefas
+        for (let dia of diasComTodos) {
+          const tarefasDoDia = tarefasFiltradas.filter(t => 
+            t.usuario === usuario && t.dia === dia
+          );
+          
+          if (tarefasDoDia.length > 0) {
+            lista.innerHTML += `<div class="dia">${dia === 'todos' ? 'Todos os dias' : dia}</div>`;
+            
+            tarefasDoDia.forEach(tarefa => {
+              const indiceOriginal = tarefas.findIndex(t => t === tarefa);
+              const concluidaClass = tarefa.concluida ? "concluida" : "";
+              
+              lista.innerHTML += `
+                <div class="tarefa ${concluidaClass}">
+                  <div class="tarefa-conteudo">${tarefa.titulo}</div>
+                  <div class="tarefa-botoes">
+                    <button class="concluir-btn" onclick="marcarConcluida(${indiceOriginal})">
+                      ${tarefa.concluida ? "Desmarcar" : "Concluir"}
+                    </button>
+                    <button class="remover-btn" onclick="removerTarefa(${indiceOriginal})">Remover</button>
+                  </div>
+                </div>
+              `;
+            });
+          }
+        }
+      }
+    }
+
+    // Função para adicionar uma nova tarefa
+    function adicionarTarefa() {
+      const usuarioInput = document.getElementById("usuario");
+      const tituloInput = document.getElementById("titulo");
+      const dia = document.getElementById("dia").value;
+
+      const usuario = usuarioInput.value.trim();
+      const titulo = tituloInput.value.trim();
+
+      // Validação visual
+      if (!usuario) {
+        usuarioInput.classList.add("input-error");
+      } else {
+        usuarioInput.classList.remove("input-error");
+      }
+
+      if (!titulo) {
+        tituloInput.classList.add("input-error");
+      } else {
+        tituloInput.classList.remove("input-error");
+      }
+      
+      if (!usuario || !titulo) {
+        return;
+      }
+
+      tarefas.push({
+        usuario: usuario,
+        titulo: titulo,
+        dia: dia,
+        concluida: false
+      });
+
+      tituloInput.value = "";
+      salvarTarefas();
+      mostrarTarefas();
+    }
+
+    // Função para remover uma tarefa
+    function removerTarefa(indice) {
+      if (confirm("Tem certeza que deseja remover esta tarefa?")) {
+        tarefas.splice(indice, 1);
+        salvarTarefas();
+        mostrarTarefas();
+      }
+    }
+
+    // Função para marcar/desmarcar uma tarefa como concluída
+    function marcarConcluida(indice) {
+      tarefas[indice].concluida = !tarefas[indice].concluida;
+      salvarTarefas();
+      mostrarTarefas();
+    }
+
+    // Adiciona eventos para os filtros e busca
+    document.getElementById('filtroUsuario').addEventListener('input', mostrarTarefas);
+    document.getElementById('filtroDia').addEventListener('change', mostrarTarefas);
+    document.getElementById('buscaTarefa').addEventListener('input', mostrarTarefas);
+
+    // Mostra as tarefas quando a página carrega
+    mostrarTarefas();
+  </script>
+</body>
+</html>

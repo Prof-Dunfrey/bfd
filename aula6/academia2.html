@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestão de Academia</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #007bff;
+    }
+
+    .formulario {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: #eef;
+      border-radius: 8px;
+    }
+
+    .formulario input, .formulario select, .formulario button {
+      margin: 5px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .formulario button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .formulario button:hover {
+      background-color: #0056b3;
+    }
+
+    .input-error {
+      border: 1px solid red !important;
+    }
+
+    .controles {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .controles input, .controles select {
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    
+    .controles button {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .controles button:hover {
+        background-color: #5a6268;
+    }
+
+    .alunos {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .aluno-container {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .aluno-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+
+    .aluno-nome {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .aluno-contagem {
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    .aluno-contagem span {
+      font-weight: bold;
+    }
+    
+    .aluno-status {
+        font-size: 0.9em;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+        color: white;
+    }
+    .status-em-dia { background-color: #28a745; }
+    .status-pendente { background-color: #ffc107; }
+    .status-atrasado { background-color: #dc3545; }
+
+    .treinos-status-container {
+      margin-top: 15px;
+    }
+    
+    .treinos-status-container h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #007bff;
+        border-bottom: 1px dashed #ccc;
+        padding-bottom: 5px;
+    }
+    
+    .treino {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 5px;
+      cursor: pointer;
+      transition: box-shadow 0.3s;
+    }
+    
+    .treino:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .treino-info {
+      flex-grow: 1;
+    }
+    
+    .treino-info strong {
+      display: block;
+    }
+
+    .treino-botoes button {
+      margin-left: 5px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: white;
+    }
+    
+    .concluir-btn {
+      background-color: #28a745;
+    }
+    
+    .concluir-btn:hover {
+      background-color: #218838;
+    }
+    
+    .remover-btn {
+      background-color: #dc3545;
+    }
+    
+    .remover-btn:hover {
+      background-color: #c82333;
+    }
+
+    .concluido {
+      text-decoration: line-through;
+      color: #777;
+      background-color: #f1f1f1;
+    }
+
+    .relatorio {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #eef;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .relatorio h2 {
+        text-align: center;
+        margin-bottom: 15px;
+        color: #007bff;
+    }
+
+    .relatorio table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .relatorio th, .relatorio td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: center;
+    }
+
+    .relatorio th {
+        background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h1>🏋️ Gestão de Academia</h1>
+
+  <div class="formulario">
+    <input type="hidden" id="indiceTreino" value="-1">
+    <input type="text" id="aluno" placeholder="Nome do aluno" required>
+    <select id="plano">
+        <option value="Mensal">Mensal</option>
+        <option value="Trimestral">Trimestral</option>
+        <option value="Anual">Anual</option>
+    </select>
+    <input type="date" id="dataPagamento">
+    <input type="text" id="exercicio" placeholder="Exercício" required>
+    <input type="number" id="series" placeholder="Séries" min="1" required>
+    <input type="number" id="repeticoes" placeholder="Repetições" min="1" required>
+    <button id="adicionarBtn" onclick="adicionarOuEditarTreino()">Adicionar Treino</button>
+  </div>
+  
+  <div class="controles">
+    <input type="text" id="filtroAluno" placeholder="Filtrar por aluno">
+    <input type="text" id="filtroExercicio" placeholder="Buscar por exercício">
+    <select id="filtroPagamento">
+        <option value="todos">Status de Pagamento</option>
+        <option value="em-dia">Em Dia</option>
+        <option value="pendente">Pendente</option>
+        <option value="atrasado">Atrasado</option>
+    </select>
+    <button onclick="limparTudo()">Limpar Tudo</button>
+  </div>
+
+  <div class="alunos" id="listaAlunos"></div>
+
+  <div class="relatorio">
+    <h2>Relatório de Alunos</h2>
+    <table id="tabelaRelatorio">
+        <thead>
+            <tr>
+                <th>Plano</th>
+                <th>Total de Alunos</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    let treinos = JSON.parse(localStorage.getItem('treinos')) || [];
+    const formulario = document.getElementById("formulario");
+
+    function salvarTreinos() {
+      localStorage.setItem('treinos', JSON.stringify(treinos));
+    }
+    
+    function getStatusPagamento(data) {
+        if (!data) return "pendente";
+        const hoje = new Date();
+        const dataPagamento = new Date(data);
+        const diasAtraso = (hoje - dataPagamento) / (1000 * 60 * 60 * 24);
+        
+        // Define o período de validade do pagamento com base no plano
+        // Exemplo: 30 dias para mensal, 90 para trimestral, 365 para anual
+        const treino = treinos.find(t => t.dataPagamento === data);
+        if (!treino) return "pendente"; // Caso não encontre o treino, é pendente
+        const plano = treino.plano;
+
+        let diasValidade = 0;
+        if (plano === "Mensal") diasValidade = 30;
+        else if (plano === "Trimestral") diasValidade = 90;
+        else if (plano === "Anual") diasValidade = 365;
+
+        if (diasAtraso > diasValidade) return "atrasado";
+        return "em-dia";
+    }
+
+    function mostrarTreinos() {
+      const lista = document.getElementById("listaAlunos");
+      lista.innerHTML = "";
+
+      const filtroAluno = document.getElementById("filtroAluno").value.toLowerCase();
+      const filtroExercicio = document.getElementById("filtroExercicio").value.toLowerCase();
+      const filtroPagamento = document.getElementById("filtroPagamento").value;
+
+      let treinosFiltrados = treinos.filter(t => {
+        const alunoMatch = filtroAluno === '' || t.aluno.toLowerCase().includes(filtroAluno);
+        const exercicioMatch = filtroExercicio === '' || t.exercicio.toLowerCase().includes(filtroExercicio);
+        const statusMatch = filtroPagamento === 'todos' || getStatusPagamento(t.dataPagamento) === filtroPagamento;
+        return alunoMatch && exercicioMatch && statusMatch;
+      });
+
+      if (treinosFiltrados.length === 0) {
+        lista.innerHTML = "<p>Nenhum treino encontrado.</p>";
+        return;
+      }
+      
+      const alunosUnicos = [...new Set(treinosFiltrados.map(t => t.aluno))].sort();
+
+      for (let aluno of alunosUnicos) {
+        const treinosDoAluno = treinosFiltrados.filter(t => t.aluno === aluno);
+        const concluidoCount = treinosDoAluno.filter(t => t.concluido).length;
+        const pendenteCount = treinosDoAluno.length - concluidoCount;
+
+        const treinosPendentes = treinosDoAluno.filter(t => !t.concluido);
+        const treinosConcluidos = treinosDoAluno.filter(t => t.concluido);
+
+        const alunoRef = treinos.find(t => t.aluno === aluno);
+        const statusPagamento = getStatusPagamento(alunoRef.dataPagamento);
+        const statusClass = `status-${statusPagamento}`;
+
+        let htmlAluno = `
+          <div class="aluno-container">
+            <div class="aluno-info">
+              <span class="aluno-nome">Aluno: ${aluno}</span>
+              <span class="${statusClass} aluno-status">${statusPagamento.toUpperCase()}</span>
+              <span class="aluno-contagem">
+                Treinos: ${pendenteCount} | Concluídos: ${concluidoCount}
+              </span>
+            </div>
+        `;
+        
+        if (treinosPendentes.length > 0) {
+            htmlAluno += `<div class="treinos-status-container"><h3>Treinos Pendentes</h3>`;
+            treinosPendentes.forEach(treino => {
+                const indice = treinos.indexOf(treino);
+                htmlAluno += criarElementoTreino(treino, indice);
+            });
+            htmlAluno += `</div>`;
+        }
+        
+        if (treinosConcluidos.length > 0) {
+            htmlAluno += `<div class="treinos-status-container"><h3>Treinos Concluídos</h3>`;
+            treinosConcluidos.forEach(treino => {
+                const indice = treinos.indexOf(treino);
+                htmlAluno += criarElementoTreino(treino, indice);
+            });
+            htmlAluno += `</div>`;
+        }
+
+        htmlAluno += `</div>`;
+        lista.innerHTML += htmlAluno;
+      }
+      
+      gerarRelatorio();
+    }
+
+    function criarElementoTreino(treino, indice) {
+        const concluidoClass = treino.concluido ? "concluido" : "";
+        return `
+          <div class="treino ${concluidoClass}" onclick="prepararParaEdicao(${indice})">
+            <div class="treino-info">
+              <strong>${treino.exercicio}</strong>
+              <span>${treino.series} séries de ${treino.repeticoes} repetições</span>
+            </div>
+            <div class="treino-botoes" onclick="event.stopPropagation();">
+              <button class="concluir-btn" onclick="marcarConcluido(${indice})">
+                ${treino.concluido ? "Desmarcar" : "Concluir"}
+              </button>
+              <button class="remover-btn" onclick="removerTreino(${indice})">Remover</button>
+            </div>
+          </div>
+        `;
+    }
+
+    function adicionarOuEditarTreino() {
+      const alunoInput = document.getElementById("aluno");
+      const planoInput = document.getElementById("plano");
+      const dataPagamentoInput = document.getElementById("dataPagamento");
+      const exercicioInput = document.getElementById("exercicio");
+      const seriesInput = document.getElementById("series");
+      const repeticoesInput = document.getElementById("repeticoes");
+      const indiceTreino = document.getElementById("indiceTreino");
+
+      const aluno = alunoInput.value.trim();
+      const plano = planoInput.value;
+      const dataPagamento = dataPagamentoInput.value;
+      const exercicio = exercicioInput.value.trim();
+      const series = parseInt(seriesInput.value);
+      const repeticoes = parseInt(repeticoesInput.value);
+
+      alunoInput.classList.toggle("input-error", !aluno);
+      exercicioInput.classList.toggle("input-error", !exercicio);
+      seriesInput.classList.toggle("input-error", isNaN(series) || series <= 0);
+      repeticoesInput.classList.toggle("input-error", isNaN(repeticoes) || repeticoes <= 0);
+
+      if (!aluno || !exercicio || isNaN(series) || isNaN(repeticoes) || series <= 0 || repeticoes <= 0) {
+        return;
+      }
+      
+      const indice = parseInt(indiceTreino.value);
+
+      if (indice > -1) {
+        treinos[indice] = {
+          aluno: aluno,
+          plano: plano,
+          dataPagamento: dataPagamento,
+          exercicio: exercicio,
+          series: series,
+          repeticoes: repeticoes,
+          concluido: treinos[indice].concluido
+        };
+        document.getElementById("adicionarBtn").innerText = "Adicionar Treino";
+        indiceTreino.value = "-1";
+      } else {
+        treinos.push({
+          aluno: aluno,
+          plano: plano,
+          dataPagamento: dataPagamento,
+          exercicio: exercicio,
+          series: series,
+          repeticoes: repeticoes,
+          concluido: false
+        });
+      }
+
+      alunoInput.value = "";
+      planoInput.value = "Mensal";
+      dataPagamentoInput.value = "";
+      exercicioInput.value = "";
+      seriesInput.value = "";
+      repeticoesInput.value = "";
+      salvarTreinos();
+      mostrarTreinos();
+    }
+
+    function prepararParaEdicao(indice) {
+      const treino = treinos[indice];
+      document.getElementById("aluno").value = treino.aluno;
+      document.getElementById("plano").value = treino.plano;
+      document.getElementById("dataPagamento").value = treino.dataPagamento || '';
+      document.getElementById("exercicio").value = treino.exercicio;
+      document.getElementById("series").value = treino.series;
+      document.getElementById("repeticoes").value = treino.repeticoes;
+      document.getElementById("indiceTreino").value = indice;
+      document.getElementById("adicionarBtn").innerText = "Salvar Edição";
+    }
+
+    function removerTreino(indice) {
+      if (confirm("Tem certeza que deseja remover este treino?")) {
+        treinos.splice(indice, 1);
+        salvarTreinos();
+        mostrarTreinos();
+      }
+    }
+
+    function marcarConcluido(indice) {
+      treinos[indice].concluido = !treinos[indice].concluido;
+      salvarTreinos();
+      mostrarTreinos();
+    }
+    
+    function limparTudo() {
+        if (confirm("Tem certeza que deseja remover TODOS os treinos? Esta ação não pode ser desfeita.")) {
+            treinos = [];
+            salvarTreinos();
+            mostrarTreinos();
+        }
+    }
+    
+    function gerarRelatorio() {
+        const tabela = document.querySelector("#tabelaRelatorio tbody");
+        tabela.innerHTML = "";
+        
+        const alunos = [...new Set(treinos.map(t => t.aluno))];
+        const planos = ["Mensal", "Trimestral", "Anual"];
+        
+        let contagemPlano = {};
+        let contagemStatus = {};
+        
+        planos.forEach(p => contagemPlano[p] = 0);
+        contagemStatus["em-dia"] = 0;
+        contagemStatus["pendente"] = 0;
+        contagemStatus["atrasado"] = 0;
+        
+        alunos.forEach(aluno => {
+            const treinoAluno = treinos.find(t => t.aluno === aluno);
+            if (treinoAluno) {
+                const plano = treinoAluno.plano;
+                const status = getStatusPagamento(treinoAluno.dataPagamento);
+                
+                contagemPlano[plano]++;
+                contagemStatus[status]++;
+            }
+        });
+
+        for (let plano of planos) {
+            const row = document.createElement("tr");
+            row.innerHTML = `<td>${plano}</td><td>${contagemPlano[plano]}</td>`;
+            tabela.appendChild(row);
+        }
+        
+        const statusRow = document.createElement("tr");
+        statusRow.innerHTML = `
+            <td>**Status de Pagamento**</td>
+            <td>Em Dia: ${contagemStatus["em-dia"]} | Pendente: ${contagemStatus["pendente"]} | Atrasado: ${contagemStatus["atrasado"]}</td>
+        `;
+        tabela.appendChild(statusRow);
+    }
+
+    document.getElementById('filtroAluno').addEventListener('input', mostrarTreinos);
+    document.getElementById('filtroExercicio').addEventListener('input', mostrarTreinos);
+    document.getElementById('filtroPagamento').addEventListener('change', mostrarTreinos);
+
+    mostrarTreinos();
+  </script>
+</body>
+</html>

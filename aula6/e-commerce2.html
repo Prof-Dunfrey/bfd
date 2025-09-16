@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Produtos - Filtro e Ordenação</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .controles {
+      margin-bottom: 15px;
+      text-align: center;
+      padding: 15px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    select, input, button {
+      padding: 8px;
+      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .produtos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 15px;
+    }
+
+    .produto {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .produto .preco {
+      font-weight: bold;
+      color: #2c5aa0;
+      margin: 8px 0;
+    }
+
+    .produto .categoria {
+      font-size: 12px;
+      color: #666;
+      background: #f0f0f0;
+      padding: 3px 8px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    .produto .estoque {
+      font-size: 14px;
+      color: #388e3c;
+      margin: 5px 0;
+    }
+
+    .produto .destaque {
+      color: #ff5722;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .filtros-avancados {
+      margin: 15px 0;
+      padding: 10px;
+      background: #f0f8ff;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .info-pagina {
+      text-align: center;
+      margin: 15px 0;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 Sistema de Produtos</h1>
+
+  <div class="controles">
+    <input type="text" id="busca" placeholder="Buscar produto..." onkeyup="aplicarFiltros()">
+    
+    <select id="categoria" onchange="aplicarFiltros()">
+      <option value="todos">Todas categorias</option>
+      <option value="Roupas">Roupas</option>
+      <option value="Calçados">Calçados</option>
+      <option value="Eletrônicos">Eletrônicos</option>
+      <option value="Livros">Livros</option>
+      <option value="Acessórios">Acessórios</option>
+    </select>
+    
+    <select id="ordenar" onchange="aplicarFiltros()">
+      <option value="nenhum">Ordenar por...</option>
+      <option value="nome">Nome (A-Z)</option>
+      <option value="nome-desc">Nome (Z-A)</option>
+      <option value="preco">Preço (Menor-Maior)</option>
+      <option value="preco-desc">Preço (Maior-Menor)</option>
+    </select>
+    
+    <select id="estoque" onchange="aplicarFiltros()">
+      <option value="todos">Todos em estoque</option>
+      <option value="disponivel">Disponível</option>
+      <option value="baixo">Estoque baixo</option>
+      <option value="indisponivel">Indisponível</option>
+    </select>
+  </div>
+
+  <div class="filtros-avancados">
+    <label>Faixa de preço: </label>
+    <input type="number" id="preco-min" placeholder="Mínimo" onchange="aplicarFiltros()" style="width: 80px">
+    <span> até </span>
+    <input type="number" id="preco-max" placeholder="Máximo" onchange="aplicarFiltros()" style="width: 80px">
+    
+    <label style="margin-left: 15px;">
+      <input type="checkbox" id="destaque" onchange="aplicarFiltros()"> 
+      Somente destaques
+    </label>
+  </div>
+
+  <div class="info-pagina">
+    <span id="total-produtos">5</span> produtos encontrados
+    <button onclick="limparFiltros()" style="margin-left: 20px;">Limpar Filtros</button>
+  </div>
+
+  <div class="produtos" id="listaProdutos"></div>
+
+  <script>
+    // Lista de produtos com mais informações
+    var produtos = [
+      { nome: "Camisa Polo", preco: 50, categoria: "Roupas", estoque: 20, destaque: true },
+      { nome: "Tênis Esportivo", preco: 200, categoria: "Calçados", estoque: 15, destaque: true },
+      { nome: "Livro de Programação", preco: 40, categoria: "Livros", estoque: 8, destaque: false },
+      { nome: "Fone de Ouvido", preco: 120, categoria: "Eletrônicos", estoque: 3, destaque: true },
+      { nome: "Boné", preco: 35, categoria: "Acessórios", estoque: 0, destaque: false },
+      { nome: "Calça Jeans", preco: 90, categoria: "Roupas", estoque: 12, destaque: false },
+      { nome: "Sandália", preco: 70, categoria: "Calçados", estoque: 5, destaque: false },
+      { nome: "Mouse Gamer", preco: 150, categoria: "Eletrônicos", estoque: 10, destaque: true }
+    ];
+
+    // Função para formatar preços em Real
+    function formatarPreco(valor) {
+      return "R$ " + valor.toFixed(2).replace(".", ",");
+    }
+
+    // Função para mostrar produtos na tela
+    function mostrarProdutos(lista) {
+      var area = document.getElementById("listaProdutos");
+      area.innerHTML = "";
+      
+      // Atualiza contador
+      document.getElementById("total-produtos").textContent = lista.length;
+      
+      // Se não houver produtos, mostra mensagem
+      if (lista.length === 0) {
+        area.innerHTML = "<p style='text-align:center;'>Nenhum produto encontrado com esses filtros.</p>";
+        return;
+      }
+      
+      // Para cada produto, cria um elemento na lista
+      for (var i = 0; i < lista.length; i++) {
+        var produto = lista[i];
+        var estoqueText = "";
+        var estoqueClass = "";
+        
+        if (produto.estoque === 0) {
+          estoqueText = "Indisponível";
+          estoqueClass = "indisponivel";
+        } else if (produto.estoque < 5) {
+          estoqueText = "Apenas " + produto.estoque + " em estoque";
+          estoqueClass = "baixo";
+        } else {
+          estoqueText = "Em estoque";
+          estoqueClass = "disponivel";
+        }
+        
+        area.innerHTML +=
+          '<div class="produto">' +
+            '<strong>' + produto.nome + '</strong><br>' +
+            '<div class="preco">' + formatarPreco(produto.preco) + '</div>' +
+            '<div class="categoria">' + produto.categoria + '</div>' +
+            '<div class="estoque ' + estoqueClass + '">' + estoqueText + '</div>' +
+            (produto.destaque ? '<div class="destaque">⭐ Destaque</div>' : '') +
+          '</div>';
+      }
+    }
+
+    // Função para aplicar filtros e ordenação
+    function aplicarFiltros() {
+      var textoBusca = document.getElementById("busca").value.toLowerCase();
+      var categoriaSelecionada = document.getElementById("categoria").value;
+      var tipoOrdenacao = document.getElementById("ordenar").value;
+      var filtroEstoque = document.getElementById("estoque").value;
+      var precoMin = parseFloat(document.getElementById("preco-min").value) || 0;
+      var precoMax = parseFloat(document.getElementById("preco-max").value) || Infinity;
+      var somenteDestaque = document.getElementById("destaque").checked;
+      
+      // Filtra os produtos
+      var produtosFiltrados = [];
+      
+      for (var i = 0; i < produtos.length; i++) {
+        var produto = produtos[i];
+        var nomeProduto = produto.nome.toLowerCase();
+        
+        // Verifica todos os filtros
+        var atendeBusca = textoBusca === "" || nomeProduto.includes(textoBusca);
+        var atendeCategoria = categoriaSelecionada === "todos" || produto.categoria === categoriaSelecionada;
+        var atendePrecoMin = produto.preco >= precoMin;
+        var atendePrecoMax = produto.preco <= precoMax;
+        var atendeDestaque = !somenteDestaque || produto.destaque;
+        
+        // Filtro de estoque
+        var atendeEstoque = true;
+        if (filtroEstoque === "disponivel") {
+          atendeEstoque = produto.estoque > 0;
+        } else if (filtroEstoque === "baixo") {
+          atendeEstoque = produto.estoque > 0 && produto.estoque < 5;
+        } else if (filtroEstoque === "indisponivel") {
+          atendeEstoque = produto.estoque === 0;
+        }
+        
+        // Se passar em todos os filtros, adiciona à lista
+        if (atendeBusca && atendeCategoria && atendePrecoMin && atendePrecoMax && atendeDestaque && atendeEstoque) {
+          produtosFiltrados.push(produto);
+        }
+      }
+      
+      // Ordena os produtos se necessário
+      if (tipoOrdenacao === "nome") {
+        // Ordena por nome (A-Z)
+        ordenarPorNome(produtosFiltrados, "crescente");
+      } 
+      else if (tipoOrdenacao === "nome-desc") {
+        // Ordena por nome (Z-A)
+        ordenarPorNome(produtosFiltrados, "decrescente");
+      }
+      else if (tipoOrdenacao === "preco") {
+        // Ordena por preço (menor para maior)
+        ordenarPorPreco(produtosFiltrados, "crescente");
+      }
+      else if (tipoOrdenacao === "preco-desc") {
+        // Ordena por preço (maior para menor)
+        ordenarPorPreco(produtosFiltrados, "decrescente");
+      }
+      
+      // Mostra os produtos filtrados e ordenados
+      mostrarProdutos(produtosFiltrados);
+    }
+
+    // Função para ordenar por nome
+    function ordenarPorNome(lista, ordem) {
+      for (var i = 0; i < lista.length - 1; i++) {
+        for (var j = i + 1; j < lista.length; j++) {
+          var deveTrocar = false;
+          
+          if (ordem === "crescente") {
+            deveTrocar = lista[i].nome > lista[j].nome;
+          } else {
+            deveTrocar = lista[i].nome < lista[j].nome;
+          }
+          
+          if (deveTrocar) {
+            var temp = lista[i];
+            lista[i] = lista[j];
+            lista[j] = temp;
+          }
+        }
+      }
+    }
+
+    // Função para ordenar por preço
+    function ordenarPorPreco(lista, ordem) {
+      for (var i = 0; i < lista.length - 1; i++) {
+        for (var j = i + 1; j < lista.length; j++) {
+          var deveTrocar = false;
+          
+          if (ordem === "crescente") {
+            deveTrocar = lista[i].preco > lista[j].preco;
+          } else {
+            deveTrocar = lista[i].preco < lista[j].preco;
+          }
+          
+          if (deveTrocar) {
+            var temp = lista[i];
+            lista[i] = lista[j];
+            lista[j] = temp;
+          }
+        }
+      }
+    }
+
+    // Função para limpar todos os filtros
+    function limparFiltros() {
+      document.getElementById("busca").value = "";
+      document.getElementById("categoria").value = "todos";
+      document.getElementById("ordenar").value = "nenhum";
+      document.getElementById("estoque").value = "todos";
+      document.getElementById("preco-min").value = "";
+      document.getElementById("preco-max").value = "";
+      document.getElementById("destaque").checked = false;
+      
+      aplicarFiltros();
+    }
+
+    // Mostra todos os produtos quando a página carrega
+    mostrarProdutos(produtos);
+  </script>
+</body>
+</html>
