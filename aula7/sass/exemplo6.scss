@@ -1,0 +1,15 @@
+.paragrafo{
+    background-color: antiquewhite;
+    color: brown;
+    padding: 20px;
+}
+
+.p1{
+    @extend .paragrafo;
+    color: aqua;
+}
+
+.p2{
+    @extend .paragrafo;
+    font-size: 1.5em;
+}

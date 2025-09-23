@@ -1,0 +1,25 @@
+@mixin caixa_noticia($cor){
+    border: 1px solid black;
+    border-radius: 10px;
+    margin: 20px;
+    padding: 20px;
+    background-color: $cor;
+}
+
+.artigo1{
+    @include caixa_noticia(lightgray);
+}
+
+.artigo2{
+    @include caixa_noticia(lightblue)
+}
+
+@mixin titulo(){
+    font-size: 3em;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: burlywood;
+}
+
+.artigo3 h1{
+    @include titulo();
+}
