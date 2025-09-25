@@ -1,0 +1,58 @@
+// Variáveis
+$cor-principal: #3498db;
+$cor-secundaria: #2ecc71;
+$fonte-padrao: 16px;
+
+// Mixin para sombra e borda arredondada
+@mixin caixa-estilizada($raio, $sombra) {
+  border-radius: $raio;
+  box-shadow: 0 2px 5px $sombra;
+}
+
+// Estilo base para elementos clicáveis
+%clicavel {
+  font-size: $fonte-padrao;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 10px 15px;
+  transition: all 0.3s ease;
+}
+
+// Estilos do menu
+.menu {
+  background-color: $cor-principal;
+  padding: 10px;
+
+  ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+
+    li {
+      a {
+        @extend %clicavel;
+        color: white;
+
+        &:hover {
+          color: $cor-secundaria;
+          border-bottom: 2px solid $cor-secundaria;
+        }
+      }
+    }
+  }
+}
+
+// Estilo do botão
+.btn {
+  @extend %clicavel;
+  background-color: $cor-secundaria;
+  color: white;
+  border: none;
+  cursor: pointer;
+
+  @include caixa-estilizada(8px, rgba(0,0,0,0.2));
+
+  &:hover {
+    background-color: darken($cor-secundaria, 10%);
+  }
+}

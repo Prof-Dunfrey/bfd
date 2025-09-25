@@ -1,0 +1,74 @@
+// ==========================
+// Variáveis
+// ==========================
+$cor-principal: #3498db;
+$cor-destaque: #f39c12;
+$espacamento: 15px;
+
+// ==========================
+// Mixin
+// ==========================
+@mixin card-estilizado($raio, $sombra, $cor) {
+  border-radius: $raio;
+  box-shadow: 0 3px 6px $sombra;
+  border-top: 5px solid $cor;
+  padding: $espacamento;
+  background-color: white;
+}
+
+// ==========================
+// Placeholders
+// ==========================
+%titulo-card {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+%texto-card {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+// ==========================
+// Estrutura dos cards
+// ==========================
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $espacamento;
+  padding: $espacamento;
+
+  .card {
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+    }
+
+    h3 {
+      @extend %titulo-card;
+    }
+
+    p {
+      @extend %texto-card;
+    }
+  }
+}
+
+// ==========================
+// Classes específicas
+// ==========================
+.card--web {
+  @include card-estilizado(10px, rgba(0,0,0,0.15), #3498db);
+}
+
+.card--design {
+  @include card-estilizado(10px, rgba(0,0,0,0.15), #9b59b6);
+}
+
+.card--marketing {
+  @include card-estilizado(10px, rgba(0,0,0,0.15), #2ecc71);
+}
